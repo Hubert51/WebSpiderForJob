@@ -49,7 +49,7 @@ class getProxy():
 		nn_url = "http://list.didsoft.com/get?email=ruijiegeng@gmail.com&pass=jpammp&pid=httppremium"
 
 		req = urllib.request.Request(nn_url, headers=self.header)
-		resp = urllib.request.urlopen(req, timeout=10)
+		resp = urllib.request.urlopen(req)
 		content = resp.read().decode("utf-8")
 
 		rawIpList = str(content).split("\n")

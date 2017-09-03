@@ -39,7 +39,7 @@ def getInfo(position, company, source, jobList,ipList, index,pathOfChromedriver,
 	# open a new driver to deal url of description
 	# driverToGetDescription = webdriver.Chrome(pathOfChromedriver)
 	# use while loop will not stop until the proxy ip is valid
-	print("Crawling No.{:} job".format(index))
+	print("Crawling No.{:} job".format(index+1))
 	while True:
 		try:
 			# open a new driver to deal url of description
@@ -56,7 +56,7 @@ def getInfo(position, company, source, jobList,ipList, index,pathOfChromedriver,
 				driverToGetDescription = webdriver.Chrome(pathOfChromedriver,chrome_options=chromeOptions)
 				# when the page open, it has 35 seconds to load resource. After that, the load process will
 				# be set down
-				driverToGetDescription.set_page_load_timeout(25)
+				driverToGetDescription.set_page_load_timeout(20)
 
 			try:
 				driverToGetDescription.get(urlOfDescription)
@@ -72,7 +72,7 @@ def getInfo(position, company, source, jobList,ipList, index,pathOfChromedriver,
 						ipList.append(ip)
 
 					driverToGetDescription.close()
-					print("No.{} job is crawled failed".format(index))
+					print("No.{} job is crawled failed".format(index+1))
 					continue
 
 			description = driverToGetDescription.find_element_by_class_name("job_bt").get_attribute("innerHTML")
@@ -83,9 +83,9 @@ def getInfo(position, company, source, jobList,ipList, index,pathOfChromedriver,
 			if ip == "approveToUseSelfIp":
 				ipList.append(ip)
 			driverToGetDescription.close()
-			print("No.{} job is crawled failed".format(index))
+			print("No.{} job is crawled failed".format(index+1))
 			continue
-	print("No.{} job is crawled successfully".format(index))
+	print("No.{} job is crawled successfully".format(index+1))
 
 	# get content of description
 	description = parserDescription(description)

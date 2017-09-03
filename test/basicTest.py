@@ -8,4 +8,4 @@ jobList = lagouSample.lagou.lagouMethod(company)
 
 end = time.time()
 
-print("The time usage to find job in {:s} is {:f}".format(company,(end-start)))
+print("The time usage to find job in {:s} is {:f} with timeout 20s".format(company,(end-start)))
