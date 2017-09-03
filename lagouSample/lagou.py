@@ -8,7 +8,7 @@ from bs4 import BeautifulSoup
 from lagouSample.job import *
 from lagouSample.helper import parserDescription
 from lagouSample.helper import getProxy
-from lagouSample.helper import setWindow
+from lagouSample.helper import setWindowSize
 from lagouSample.helper import getIpFromIpList
 from lagouSample.helper import appendIp
 import random
@@ -39,6 +39,7 @@ def getInfo(position, company, source, jobList,ipList, index,pathOfChromedriver,
 	# open a new driver to deal url of description
 	# driverToGetDescription = webdriver.Chrome(pathOfChromedriver)
 	# use while loop will not stop until the proxy ip is valid
+	print("Crawling No.{:} job".format(index))
 	while True:
 		try:
 			# open a new driver to deal url of description
@@ -55,7 +56,7 @@ def getInfo(position, company, source, jobList,ipList, index,pathOfChromedriver,
 				driverToGetDescription = webdriver.Chrome(pathOfChromedriver,chrome_options=chromeOptions)
 				# when the page open, it has 35 seconds to load resource. After that, the load process will
 				# be set down
-				driverToGetDescription.set_page_load_timeout(35)
+				driverToGetDescription.set_page_load_timeout(25)
 
 			try:
 				driverToGetDescription.get(urlOfDescription)
@@ -63,7 +64,6 @@ def getInfo(position, company, source, jobList,ipList, index,pathOfChromedriver,
 				try:
 					description = driverToGetDescription.find_element_by_class_name("job_bt").get_attribute("innerHTML")
 					appendIp(lock,ipList,ip)
-					print(ip)
 					break
 				except:
 					# we won't throw self ip away though something wrong happened
@@ -72,18 +72,20 @@ def getInfo(position, company, source, jobList,ipList, index,pathOfChromedriver,
 						ipList.append(ip)
 
 					driverToGetDescription.close()
+					print("No.{} job is crawled failed".format(index))
 					continue
 
 			description = driverToGetDescription.find_element_by_class_name("job_bt").get_attribute("innerHTML")
 			appendIp(lock,ipList,ip)
-			print(ip)
 			break
 
 		except:
 			if ip == "approveToUseSelfIp":
 				ipList.append(ip)
 			driverToGetDescription.close()
+			print("No.{} job is crawled failed".format(index))
 			continue
+	print("No.{} job is crawled successfully".format(index))
 
 	# get content of description
 	description = parserDescription(description)
@@ -94,7 +96,7 @@ def getInfo(position, company, source, jobList,ipList, index,pathOfChromedriver,
 	# description=""
 	jobObject = Job(job, description,salary,company,source)
 	print("Job Storeed\n")
-	print(jobObject.toJson().values())
+	# print(jobObject.toJson().values())
 	jobList.append(jobObject)
 
 # driver: webdriver object
@@ -145,22 +147,24 @@ def lagouMethod(companyName):
 	pathOfChromedriver = path.strip("lagou.py")+"chromedriver"
 	driver = webdriver.Chrome(pathOfChromedriver)
 
-	setWindow(driver)
+	setWindowSize(driver)
 
 	# the job information of that company
 	url = "https://www.lagou.com/jobs/list_" + companyName + "?labelWords=&fromSearch=true&suginput="
+	
+	driver.set_page_load_timeout(15)
 
 	# to simulate user request
 	while True:
 		try:
 			driver.get(url)
+			# to know the total pages of jobs in this company
 			totalNumberOfPage = int(driver.find_element_by_class_name("totalNum").get_attribute("innerHTML"))
 			break
 		except:
-			# driver.close()
+			driver.close()
 			continue
-
-	# to know the total pages of jobs in this company
+	print("Open main page of {:} successfully".format(companyName))
 
 	for index in range(totalNumberOfPage): 
 		# to get proxy ip from website.
@@ -174,8 +178,9 @@ def lagouMethod(companyName):
 		if index+1 == totalNumberOfPage:
 			break
 			
-		for index in range(1000):
-			# try two button one by one
+		# try two button one by one
+		print("Turning the page")
+		while True:
 			try:
 				# js code to scroll down the window
 				js = "var q=document.body.scrollTop=100000"  
@@ -191,10 +196,10 @@ def lagouMethod(companyName):
 				except:
 					print("button does not work")
 					time.sleep(2)
-			# if index == 10:
-
+		print("Turn to page {:}".format(index+2))
 
 		time.sleep(2)
+	driver.close()
 	return jobList
 
 if __name__ == '__main__':

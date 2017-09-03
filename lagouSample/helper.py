@@ -17,7 +17,7 @@ def parserDescription(description):
 	return description
 
 # driver: chrome object
-def setWindow(driver):
+def setWindowSize(driver):
 	screenHeight = "return window.screen.height"
 	screenWidth = "return window.screen.width"
 	screenHeight = driver.execute_script(screenHeight)
