@@ -1,0 +1,1 @@
+from .bossZhipinSample import bossZhipinMethod
